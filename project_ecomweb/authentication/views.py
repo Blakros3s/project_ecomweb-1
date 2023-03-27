@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.models import User
 from django.contrib import auth
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.contrib import messages
 
 # Create your views here.
 class LoginView(View):
@@ -17,6 +18,7 @@ class LoginView(View):
             user = auth.authenticate(username=username, password=password)
             if user:
                 login(request, user)
+                messages.success(request, "You're logged in successfully!")
                 return redirect('dashboard')
             return redirect('login')
         except:
@@ -31,7 +33,13 @@ class RegistrationView(View):
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         username = request.POST.get('username')
-        password = request.POST.get('first_name')
+        password = request.POST.get('password')
 
         user = User.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
         return redirect("register")
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        messages.success(request, "You've been logged out!")
+        return redirect('login')
