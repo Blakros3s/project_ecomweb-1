@@ -22,5 +22,8 @@ class Product(models.Model):
     cod = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         db_table = 'app_products'
