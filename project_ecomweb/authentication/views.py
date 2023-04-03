@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.core.mail import send_mail
 
 # Create your views here.
 class LoginView(View):
@@ -36,6 +37,13 @@ class RegistrationView(View):
         password = request.POST.get('password')
 
         user = User.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
+        send_mail(
+            'Account Creation', # subject
+            'Thank you for joining us. Welcome to ECOM', # message body
+            'c4crypt@gmail.com',
+            [user.email]
+        )
+        
         return redirect("register")
 
 class LogoutView(View):
