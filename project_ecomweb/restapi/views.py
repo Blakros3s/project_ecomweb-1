@@ -28,3 +28,44 @@ class ProductApiView(APIView):
             return Response({"msg": "Product added successfully"}, status=status.HTTP_200_OK)
         else:
             return Response(product_serialize.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProductApiIdView(APIView):
+    def get_object(self, id):
+        """this function will return object of product"""
+        try:
+            product = Product.objects.get(id=id)
+            return product
+        except Product.DoesNotExist:
+            return None
+
+    def get(self, request, id):
+        instance = self.get_object(id)
+
+        if not instance:
+            return Response({"msg": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ProductSerializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, id):
+        instance = self.get_object(id)
+
+        if not instance:
+            return Response({"msg": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProductSerializer(instance=instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"msg": "Data updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"msg": "Something went wrong", "error": serializer.errors}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    def delete(self, request, id):
+        instance = self.get_object(id)
+
+        if not instance:
+            return Response({"msg": "Data not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        instance.delete()
+        return Response({"msg": "Data deleted successfully"}, status=status.HTTP_200_OK)
