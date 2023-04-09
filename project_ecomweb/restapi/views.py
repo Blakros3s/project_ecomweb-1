@@ -8,6 +8,16 @@ from .serializers import CategorySerializer, ProductSerializer
 from app_ecom.models import Category, Product
 
 # Create your views here.
+class ApiResponse():
+    def successResponse(self, message, code, data=dict()):
+        context = {
+                "message": message,
+                "status_code": code,
+                "data": data,
+                "error": []
+            }
+        return context
+
 class CategoryApiView(APIView):
     def get(self, request):
         categories = Category.objects.all()
@@ -17,8 +27,18 @@ class CategoryApiView(APIView):
 class ProductApiView(APIView):
     def get(self, request):
         products = Product.objects.all()
-        product_serialize = ProductSerializer(products, many=True)
-        return Response(product_serialize.data, status=status.HTTP_200_OK)
+        try:
+            product_serialize = ProductSerializer(products, many=True)
+            response = ApiResponse()
+            return Response(response.successResponse(message="Product List", code=200, data=product_serialize.data), status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            context = {
+                "message": "Product Not found",
+                "status_code": 404,
+                "data": [],
+                "error": {"error_message": "Data not found"}
+            }
+            return Response(context, status=status.HTTP_200_OK)
     
     def post(self, request):
         data = request.data

@@ -37,12 +37,12 @@ class RegistrationView(View):
         password = request.POST.get('password')
 
         user = User.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
-        send_mail(
-            'Account Creation', # subject
-            'Thank you for joining us. Welcome to ECOM', # message body
-            'c4crypt@gmail.com',
-            [user.email]
-        )
+        # send_mail(
+        #     'Account Creation', # subject
+        #     'Thank you for joining us. Welcome to ECOM', # message body
+        #     'c4crypt@gmail.com',
+        #     [user.email]
+        # )
         
         return redirect("register")
 
